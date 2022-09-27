@@ -1,0 +1,17 @@
+*.o
+*.su
+*.s
+*.d
+*.elf
+*.list
+*.map
+*.zip
+Debug/
+*.project
+*.mxproject
+*.cproject
+*.prefs
+*.launch
+*.xml
+*.extSettings
+*.chm
