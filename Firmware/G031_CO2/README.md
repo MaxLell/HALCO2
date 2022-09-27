@@ -1,0 +1,5 @@
+## Setup
+- The Firmware needs to be flashed in the following order:
+
+1. *G031_BoardBringUp*: First flash this programm. This enables the Main Power LED and toggles the Status LED to indicate that the execution is running as intended on the Microcontroller. Furthermore this Project also changes the Boot-Pin Configuration of the Microcontroller permanently. This is mandatory, since the Boot Pin is physically connected to the DC Fan via a PWM Signal. The PWM Signal cannot be generated without the re-config of the Boot Pin. This script tests the Status LED and the Signal (Eye) LED + it reconfigures the Boot Pin.
+2. *G031_Test*: This is the main firmware of the Microcontroller. Sorry for the poor naming. This script runs the main firmware. Once the flashing and toggling of the LEDs stopped (This is the start up sequence, that indicates a reset), breath continuously for 10 seconds onto the Sensor. If the Light Sequence now changes (supposed you try this out in a room, that has low CO2 values), the CO2 Sensor also works as intended. If the CO2 Sensor is not properly soldered, the Watchdog will restart the System after around 30 seconds.
