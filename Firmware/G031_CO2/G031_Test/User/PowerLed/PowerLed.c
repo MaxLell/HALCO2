@@ -12,14 +12,20 @@
 uint32_t ua32PwmArray[PWM_ARRAY_SIZE];
 uint8_t bPulseLedFlag = 0;
 
-/* -------------------------------------------------- */
-/* ------------------- Power LED  ------------------- */
-/* -------------------------------------------------- */
-
-void PowerLed_Init()
+void PowerLed_Enable()
 {
 	/* Start PWM Signal Generation */
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+}
+void PowerLed_Disable()
+{
+	/* Stop PWM Signal Generation */
+	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_4);
+}
+
+void PowerLed_Init()
+{
+	PowerLed_Enable();
 
 	/* Wait 1 Second: Make it visually seperable that the system starts up */
 	Delay_ms(1000);
@@ -45,6 +51,7 @@ void PowerLed_BadAirQuality()
 	 * that grabs attention in a negative way - it gets
 	 * on your nerves
 	 */
+	PowerLed_Enable();
 
 	/* Set Up Timers correctly */
 	__HAL_TIM_SET_PRESCALER(&htim1, 32000-1);
@@ -63,6 +70,8 @@ void PowerLed_MediumAirQuality()
 	 * lightning pattern that only indicates, but does not
 	 * force you to act on it.
 	 */
+
+	PowerLed_Enable();
 
 	/* Signal LED stays constantly on at 80% max Brightness */
 	__HAL_TIM_SET_PRESCALER(&htim1, 3200-1);
@@ -83,9 +92,23 @@ void PowerLed_GoodAirQuality()
 	 * and is running - 2kHz
 	 * Max Switching Frequency of the PAM2804 -> 1kHz
 	 */
+	PowerLed_Enable();
+
 	__HAL_TIM_SET_PRESCALER(&htim1, 3200-1);
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 10);
 	return;
+}
+
+void PowerLed_PerfectAirQuality()
+{
+	/*
+	 * Signal LED is switched off completely to increase
+	 * the LEDs lifetime. This functionality will especially active
+	 * during the times, where the window is open in either way.
+	 * There is no need for HALCO to be active if the CO2 Levels
+	 * are that low.
+	 */
+	PowerLed_Disable();
 }
 
 uint32_t PowerLed_ClipSignalAccordingToBoundaries(uint32_t number)

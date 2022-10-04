@@ -10,11 +10,20 @@
 
 #include "main.h"
 
-/* Signal LED */
 void PowerLed_Init();
+
+void PowerLed_Enable();
+
+void PowerLed_Disable();
+
 void PowerLed_BadAirQuality();
+
 void PowerLed_MediumAirQuality();
+
 void PowerLed_GoodAirQuality();
+
+void PowerLed_PerfectAirQuality();
+
 void PowerLed_CreatePwmArray();
 
 uint32_t PowerLed_ClipSignalAccordingToBoundaries(uint32_t number);
