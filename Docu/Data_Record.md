@@ -1,4 +1,4 @@
-# Data Display / Record in Terminal
+# Data Display / Record in Terminal - this only applies to the Arduino Prototype Setup
 ## Display Data
 1. Open Terminal
 2. enter `screen /dev/tty.<usbdevice> <baudrate>`
