@@ -21,7 +21,7 @@ static uint32_t u32BadAirQualityThreshold = 1200;
 AirQuality_e AirQuality_GetFromCO2(uint16_t);
 void SetOutputsAccordingToAirQuality(AirQuality_e);
 void app_init(void);
-
+uint16_t AirQuality_getAverageOverFiveSamples(uint16_t u16CurrentSample);
 
 /**
  * Make sure to first execute the G031_BoardBringUp Project
@@ -45,8 +45,11 @@ void app_main(void)
 			/* Get the Sample */
 			uint16_t u16Co2Reading = Co2Sensor_GetSample();
 
+			// Calculate the average Value over 5 Samples
+			uint16_t u16AveragedCo2Reading = AirQuality_getAverageOverFiveSamples(u16Co2Reading);
+
 			/* Interpret the sample */
-			AirQuality_e eAirQuality = AirQuality_GetFromCO2(u16Co2Reading);
+			AirQuality_e eAirQuality = AirQuality_GetFromCO2(u16AveragedCo2Reading);
 
 			/* Act on the air quality */
 			SetOutputsAccordingToAirQuality(eAirQuality);
@@ -62,6 +65,36 @@ void app_main(void)
 	}
 }
 
+uint16_t AirQuality_getAverageOverFiveSamples(uint16_t u16CurrentSample)
+{
+	uint16_t u16AverageSample;
+#define u16NofSamples 5
+	static uint16_t au16Samples[u16NofSamples] = {0};
+	static uint16_t idx = 0;
+
+	// Add sample to array at idx
+	au16Samples[idx] = u16CurrentSample;
+
+	// Calculate the average value of the array
+	for (int i = 0; i < u16NofSamples; i++)
+	{
+		u16AverageSample += au16Samples[i];
+	}
+	u16AverageSample /= u16NofSamples;
+
+	// increment idx
+	idx++;
+
+	// if idx > 5 -> Set to 0
+	if (idx >= u16NofSamples)
+	{
+		idx = 0;
+	}
+
+	// return average value
+	return u16AverageSample;
+}
+
 AirQuality_e AirQuality_GetFromCO2(uint16_t u16Co2Reading)
 {
 	/* Decide on the Air Quality */
@@ -74,7 +107,7 @@ AirQuality_e AirQuality_GetFromCO2(uint16_t u16Co2Reading)
 	}
 	/* Good Air */
 	else if ((u16Co2Reading > u32PerfectAirQualityThreshold) &&
-			(u16Co2Reading <= u32GoodAirQualityThreshold))
+			 (u16Co2Reading <= u32GoodAirQualityThreshold))
 	{
 		eAirQuality = GOOD_AIR;
 	}
@@ -95,7 +128,7 @@ AirQuality_e AirQuality_GetFromCO2(uint16_t u16Co2Reading)
 void SetOutputsAccordingToAirQuality(AirQuality_e eAirQuality)
 {
 	/* Switch Outputs according to Air Quality */
-	switch(eAirQuality)
+	switch (eAirQuality)
 	{
 	case PERFECT_AIR:
 		/* Outputs for Perfect Air Quality */
@@ -127,7 +160,8 @@ void SetOutputsAccordingToAirQuality(AirQuality_e eAirQuality)
 		 * Get into an infinite loop and wait for
 		 * the Watchdog to restart the system
 		 */
-		while (1);
+		while (1)
+			;
 
 		break;
 	}
@@ -160,6 +194,3 @@ void app_init(void)
 	/* Wait 2 sec in order to have time to witness the fan spinning */
 	Delay_ms(2000);
 }
-
-
-
