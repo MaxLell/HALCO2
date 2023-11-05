@@ -13,15 +13,10 @@
 #include "PowerLed.h"
 #include "fan.h"
 #include "delay.h"
+#include "AirQuality.h"
 
-static uint32_t u32PerfectAirQualityThreshold = 600;
-static uint32_t u32GoodAirQualityThreshold = 800;
-static uint32_t u32BadAirQualityThreshold = 1200;
-
-AirQuality_e AirQuality_GetFromCO2(uint16_t);
 void SetOutputsAccordingToAirQuality(AirQuality_e);
 void app_init(void);
-uint16_t AirQuality_getAverageOverFiveSamples(uint16_t u16CurrentSample);
 
 /**
  * Make sure to first execute the G031_BoardBringUp Project
@@ -29,6 +24,48 @@ uint16_t AirQuality_getAverageOverFiveSamples(uint16_t u16CurrentSample);
  * connectected to the Boot Pin. Therefore the Microcontroller
  * will restart itself.
  */
+
+void SetOutputsAccordingToAirQuality(AirQuality_e eAirQuality)
+{
+    /* Switch Outputs according to Air Quality */
+    switch (eAirQuality)
+    {
+    case PERFECT_AIR:
+        /* Outputs for Perfect Air Quality */
+        PowerLed_PerfectAirQuality();
+        Fan_disable();
+        break;
+
+    case GOOD_AIR:
+        /* Outputs for Good Air Quality */
+        PowerLed_GoodAirQuality();
+        Fan_enable();
+        break;
+
+    case MEDIUM_AIR:
+        /* Outputs for Medium Air Quality */
+        PowerLed_MediumAirQuality();
+        Fan_enable();
+        break;
+
+    case BAD_AIR:
+        /* Outputs for Bad Air Quality */
+        PowerLed_BadAirQuality();
+        Fan_enable();
+        break;
+
+    default:
+        /*
+         * This Point shall be never reached
+         * Get into an infinite loop and wait for
+         * the Watchdog to restart the system
+         */
+        while (1)
+            ;
+
+        break;
+    }
+}
 
 void app_main(void)
 {
@@ -62,108 +99,6 @@ void app_main(void)
 
 		/* Wait for 2sec, before polling again on the Sensor */
 		Delay_ms(2000);
-	}
-}
-
-uint16_t AirQuality_getAverageOverFiveSamples(uint16_t u16CurrentSample)
-{
-	uint16_t u16AverageSample;
-#define u16NofSamples 5
-	static uint16_t au16Samples[u16NofSamples] = {0};
-	static uint16_t idx = 0;
-
-	// Add sample to array at idx
-	au16Samples[idx] = u16CurrentSample;
-
-	// Calculate the average value of the array
-	for (int i = 0; i < u16NofSamples; i++)
-	{
-		u16AverageSample += au16Samples[i];
-	}
-	u16AverageSample /= u16NofSamples;
-
-	// increment idx
-	idx++;
-
-	// if idx > 5 -> Set to 0
-	if (idx >= u16NofSamples)
-	{
-		idx = 0;
-	}
-
-	// return average value
-	return u16AverageSample;
-}
-
-AirQuality_e AirQuality_GetFromCO2(uint16_t u16Co2Reading)
-{
-	/* Decide on the Air Quality */
-	AirQuality_e eAirQuality = PERFECT_AIR;
-
-	/* Perfect Air */
-	if (u16Co2Reading <= u32PerfectAirQualityThreshold)
-	{
-		eAirQuality = PERFECT_AIR;
-	}
-	/* Good Air */
-	else if ((u16Co2Reading > u32PerfectAirQualityThreshold) &&
-			 (u16Co2Reading <= u32GoodAirQualityThreshold))
-	{
-		eAirQuality = GOOD_AIR;
-	}
-	/* Medium Air Quality */
-	else if ((u16Co2Reading > u32GoodAirQualityThreshold) &&
-			 (u16Co2Reading < u32BadAirQualityThreshold))
-	{
-		eAirQuality = MEDIUM_AIR;
-	}
-	/* Just the worst Air Quality */
-	else
-	{
-		eAirQuality = BAD_AIR;
-	}
-	return eAirQuality;
-}
-
-void SetOutputsAccordingToAirQuality(AirQuality_e eAirQuality)
-{
-	/* Switch Outputs according to Air Quality */
-	switch (eAirQuality)
-	{
-	case PERFECT_AIR:
-		/* Outputs for Perfect Air Quality */
-		PowerLed_PerfectAirQuality();
-		Fan_disable();
-		break;
-
-	case GOOD_AIR:
-		/* Outputs for Good Air Quality */
-		PowerLed_GoodAirQuality();
-		Fan_enable();
-		break;
-
-	case MEDIUM_AIR:
-		/* Outputs for Medium Air Quality */
-		PowerLed_MediumAirQuality();
-		Fan_enable();
-		break;
-
-	case BAD_AIR:
-		/* Outputs for Bad Air Quality */
-		PowerLed_BadAirQuality();
-		Fan_enable();
-		break;
-
-	default:
-		/*
-		 * This Point shall be never reached
-		 * Get into an infinite loop and wait for
-		 * the Watchdog to restart the system
-		 */
-		while (1)
-			;
-
-		break;
 	}
 }
 
