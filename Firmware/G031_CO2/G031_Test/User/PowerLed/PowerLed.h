@@ -9,6 +9,7 @@
 #define POWERLED_POWERLED_H_
 
 #include "main.h"
+#include "stdint.h"
 
 void PowerLed_Init();
 
@@ -16,13 +17,13 @@ void PowerLed_Enable();
 
 void PowerLed_Disable();
 
-void PowerLed_BadAirQuality();
+void PowerLed_Level3AirQuality();
 
-void PowerLed_MediumAirQuality();
+void PowerLed_Level2AirQuality();
 
-void PowerLed_GoodAirQuality();
+void PowerLed_Level1AirQuality();
 
-void PowerLed_PerfectAirQuality();
+void PowerLed_Level0AirQuality();
 
 void PowerLed_CreatePwmArray();
 

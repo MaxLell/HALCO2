@@ -3,30 +3,30 @@
 
 static uint32_t u32PerfectAirQualityThreshold = 600;
 static uint32_t u32GoodAirQualityThreshold = 800;
-static uint32_t u32BadAirQualityThreshold = 1200;
+static uint32_t u32BadAirQualityThreshold = 1000;
 
 uint16_t AirQuality_getAverageOverFiveSamples(uint16_t u16CurrentSample)
 {
     uint16_t u16AverageSample;
-#define u16NofSamples 5
-    static uint16_t au16Samples[u16NofSamples] = {0};
+#define NUMBER_OF_SAMPLES 5
+    static uint16_t au16Samples[NUMBER_OF_SAMPLES] = {0};
     static uint16_t idx = 0;
 
     // Add sample to array at idx
     au16Samples[idx] = u16CurrentSample;
 
     // Calculate the average value of the array
-    for (int i = 0; i < u16NofSamples; i++)
+    for (int i = 0; i < NUMBER_OF_SAMPLES; i++)
     {
         u16AverageSample += au16Samples[i];
     }
-    u16AverageSample /= u16NofSamples;
+    u16AverageSample /= NUMBER_OF_SAMPLES;
 
     // increment idx
     idx++;
 
     // if idx > 5 -> Set to 0
-    if (idx >= u16NofSamples)
+    if (idx >= NUMBER_OF_SAMPLES)
     {
         idx = 0;
     }

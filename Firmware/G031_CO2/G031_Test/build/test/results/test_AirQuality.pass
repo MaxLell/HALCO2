@@ -2,17 +2,18 @@
 :source:
   :path: test
   :file: test_AirQuality.c
-:successes: []
-:failures: []
-:ignores:
-- :test: test_AirQuality_NeedToImplement
-  :line: 17
-  :message: Need to Implement AirQuality
+:successes:
+- :test: test_AirQuality_AirQuality_getAverageOverFiveSamples_shall_calculateTheAverageOver5Samples
+  :line: 13
+  :message: ''
   :unity_test_time: 0
+:failures: []
+:ignores: []
 :counts:
   :total: 1
-  :passed: 0
+  :passed: 1
   :failed: 0
-  :ignored: 1
-:stdout: []
-:time: 0.3036369998008013
+  :ignored: 0
+:stdout:
+- 'Average: 3'
+:time: 0.25369800021871924

@@ -4,10 +4,6 @@
 
 
 
-
-
-
-
 void setUp(void)
 
 {
@@ -24,10 +20,22 @@ void tearDown(void)
 
 
 
-void test_AirQuality_NeedToImplement(void)
+void test_AirQuality_AirQuality_getAverageOverFiveSamples_shall_calculateTheAverageOver5Samples(void)
 
 {
 
-    UnityIgnore( (("Need to Implement AirQuality")), (UNITY_UINT)(17));
+    uint16_t u16Samples[5] = {1, 2, 3, 4, 5};
+
+    uint16_t u16Average;
+
+    for (int i = 0; i < 5; i++)
+
+    {
+
+        u16Average = AirQuality_getAverageOverFiveSamples(u16Samples[i]);
+
+    }
+
+    printf("Average: %d\n", u16Average);
 
 }

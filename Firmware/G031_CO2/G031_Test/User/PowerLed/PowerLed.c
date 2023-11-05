@@ -9,7 +9,7 @@
 #include "delay.h"
 
 #define PWM_ARRAY_SIZE 80
-uint32_t ua32PwmArray[PWM_ARRAY_SIZE];
+uint32_t ua32PwmArray[PWM_ARRAY_SIZE] = {0};
 uint8_t bPulseLedFlag = 0;
 
 void PowerLed_Enable()
@@ -43,7 +43,7 @@ void PowerLed_Init()
 	bPulseLedFlag = 0;
 	return;
 }
-void PowerLed_BadAirQuality()
+void PowerLed_Level3AirQuality()
 {
 	/*
 	 * Blinking of the Signal LED:
@@ -54,15 +54,14 @@ void PowerLed_BadAirQuality()
 	PowerLed_Enable();
 
 	/* Set Up Timers correctly */
-	__HAL_TIM_SET_PRESCALER(&htim1, 32000-1);
+	__HAL_TIM_SET_PRESCALER(&htim1, 32000 - 1);
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 20);
 
 	/* Disable functionality of the TIM ISR */
 	bPulseLedFlag = 0;
 	return;
-
 }
-void PowerLed_MediumAirQuality()
+void PowerLed_Level2AirQuality()
 {
 	/*
 	 * Pulse LED slowly:
@@ -74,14 +73,14 @@ void PowerLed_MediumAirQuality()
 	PowerLed_Enable();
 
 	/* Signal LED stays constantly on at 80% max Brightness */
-	__HAL_TIM_SET_PRESCALER(&htim1, 3200-1);
+	__HAL_TIM_SET_PRESCALER(&htim1, 3200 - 1);
 
 	/* Enable functionality of the TIM ISR */
 	bPulseLedFlag = 1;
 
 	return;
 }
-void PowerLed_GoodAirQuality()
+void PowerLed_Level1AirQuality()
 {
 	/* Disable functionality of the TIM ISR */
 	bPulseLedFlag = 0;
@@ -94,12 +93,12 @@ void PowerLed_GoodAirQuality()
 	 */
 	PowerLed_Enable();
 
-	__HAL_TIM_SET_PRESCALER(&htim1, 3200-1);
+	__HAL_TIM_SET_PRESCALER(&htim1, 3200 - 1);
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 10);
 	return;
 }
 
-void PowerLed_PerfectAirQuality()
+void PowerLed_Level0AirQuality()
 {
 	/*
 	 * Signal LED is switched off completely to increase
@@ -141,19 +140,20 @@ void PowerLed_CreatePwmArray()
 	 * Overwrite lowest value (10% Brightness)
 	 * with 0% Brightness
 	 */
-	ua32PwmArray[0] = 0;
+	// ua32PwmArray[0] = 0;
 
 	uint32_t modif = 2;
 	uint32_t u32PwmArrayHalfSize = PWM_ARRAY_SIZE / 2;
-	for (uint32_t i = 1; i < PWM_ARRAY_SIZE; i++)
+	for (uint32_t i = 0; i < PWM_ARRAY_SIZE; i++)
 	{
+		ua32PwmArray[i] = PowerLed_ClipSignalAccordingToBoundaries(ua32PwmArray[i]);
 		/*
 		 * First Half of the array -> INcrement values,
 		 * but also check on boundaries
 		 */
 		if (i < u32PwmArrayHalfSize)
 		{
-			ua32PwmArray[i] = ua32PwmArray[i-1] + modif;
+			ua32PwmArray[i] = ua32PwmArray[i - 1] + modif;
 
 			/* Run Boundary Check */
 			ua32PwmArray[i] = PowerLed_ClipSignalAccordingToBoundaries(ua32PwmArray[i]);
@@ -165,6 +165,7 @@ void PowerLed_CreatePwmArray()
 			 * overwrite brightest Pulse (90% brigthness) with 100% Brightness
 			 */
 			ua32PwmArray[u32PwmArrayHalfSize] = 100;
+			ua32PwmArray[i] = PowerLed_ClipSignalAccordingToBoundaries(ua32PwmArray[i]);
 		}
 		/*
 		 * First Half of the array -> DEcrement values,
@@ -172,7 +173,7 @@ void PowerLed_CreatePwmArray()
 		 */
 		else
 		{
-			ua32PwmArray[i] = ua32PwmArray[i-1] - modif;
+			ua32PwmArray[i] = ua32PwmArray[i - 1] - modif;
 
 			/* Run Boundary Check */
 			ua32PwmArray[i] = PowerLed_ClipSignalAccordingToBoundaries(ua32PwmArray[i]);

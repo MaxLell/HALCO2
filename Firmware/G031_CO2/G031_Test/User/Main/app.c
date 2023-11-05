@@ -27,44 +27,44 @@ void app_init(void);
 
 void SetOutputsAccordingToAirQuality(AirQuality_e eAirQuality)
 {
-    /* Switch Outputs according to Air Quality */
-    switch (eAirQuality)
-    {
-    case PERFECT_AIR:
-        /* Outputs for Perfect Air Quality */
-        PowerLed_PerfectAirQuality();
-        Fan_disable();
-        break;
+	/* Switch Outputs according to Air Quality */
+	switch (eAirQuality)
+	{
+	case PERFECT_AIR:
+		/* Outputs for Perfect Air Quality */
+		PowerLed_Level0AirQuality();
+		Fan_disable();
+		break;
 
-    case GOOD_AIR:
-        /* Outputs for Good Air Quality */
-        PowerLed_GoodAirQuality();
-        Fan_enable();
-        break;
+	case GOOD_AIR:
+		/* Outputs for Good Air Quality */
+		PowerLed_Level1AirQuality();
+		Fan_enable();
+		break;
 
-    case MEDIUM_AIR:
-        /* Outputs for Medium Air Quality */
-        PowerLed_MediumAirQuality();
-        Fan_enable();
-        break;
+	case MEDIUM_AIR:
+		/* Outputs for Medium Air Quality */
+		PowerLed_Level1AirQuality();
+		Fan_enable();
+		break;
 
-    case BAD_AIR:
-        /* Outputs for Bad Air Quality */
-        PowerLed_BadAirQuality();
-        Fan_enable();
-        break;
+	case BAD_AIR:
+		/* Outputs for Bad Air Quality */
+		PowerLed_Level2AirQuality();
+		Fan_enable();
+		break;
 
-    default:
-        /*
-         * This Point shall be never reached
-         * Get into an infinite loop and wait for
-         * the Watchdog to restart the system
-         */
-        while (1)
-            ;
+	default:
+		/*
+		 * This Point shall be never reached
+		 * Get into an infinite loop and wait for
+		 * the Watchdog to restart the system
+		 */
+		while (1)
+			;
 
-        break;
-    }
+		break;
+	}
 }
 
 void app_main(void)

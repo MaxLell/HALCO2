@@ -10,7 +10,7 @@ char* GlobalOrderError;
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_AirQuality_NeedToImplement(void);
+extern void test_AirQuality_AirQuality_getAverageOverFiveSamples_shall_calculateTheAverageOver5Samples(void);
 
 
 /*=======Mock Management=====*/
@@ -75,7 +75,7 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
 int main(void)
 {
   UnityBegin("test_AirQuality.c");
-  run_test(test_AirQuality_NeedToImplement, "test_AirQuality_NeedToImplement", 15);
+  run_test(test_AirQuality_AirQuality_getAverageOverFiveSamples_shall_calculateTheAverageOver5Samples, "test_AirQuality_AirQuality_getAverageOverFiveSamples_shall_calculateTheAverageOver5Samples", 13);
 
   return UnityEnd();
 }
